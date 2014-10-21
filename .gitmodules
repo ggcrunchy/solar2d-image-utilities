@@ -1,0 +1,18 @@
+[submodule "corona_utils"]
+	path = corona_utils
+	url = https://github.com/ggcrunchy/corona_utils
+[submodule "corona_ui"]
+	path = corona_ui
+	url = https://github.com/ggcrunchy/corona_ui
+[submodule "graph_ops"]
+	path = graph_ops
+	url = https://github.com/ggcrunchy/graph_ops
+[submodule "image_ops"]
+	path = image_ops
+	url = https://github.com/ggcrunchy/image_ops
+[submodule "bitwise_ops"]
+	path = bitwise_ops
+	url = https://github.com/ggcrunchy/bitwise_ops
+[submodule "image_fx"]
+	path = image_fx
+	url = https://github.com/ggcrunchy/image_fx
