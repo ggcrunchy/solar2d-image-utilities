@@ -226,7 +226,7 @@ function Scene:show (event)
 		-- the awkward scenario that generation finishes, and the view switches, along the way.
 		buttons.Button(self.view, nil, params.ok_x, params.cancel_y, 100, 40, function()
 			funcs.Cancel()
-			funcs.ShowOverlay("samples.overlay.Seams_Energy", params)
+			funcs.ShowOverlay("seams.Energy", params)
 		end, "Cancel")
 
 		buttons.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
@@ -361,7 +361,7 @@ function Scene:show (event)
 			-- Present carve options.
 			params.buf1, params.buf2 = buf1, buf2
 
-			funcs.ShowOverlay("samples.overlay.Seams_Carve", params)
+			funcs.ShowOverlay("seams.Carve", params)
 		end)()
 	end
 end

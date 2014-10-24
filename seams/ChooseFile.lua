@@ -97,7 +97,7 @@ function Scene:show (event)
 							params.cancel_y = cancel.y
 							params.image = image
 
-							funcs.ShowOverlay("samples.overlay.Seams_Energy", params)
+							funcs.ShowOverlay("seams.Energy", params)
 						end
 					else
 						funcs.SetStatus("Choose an image")

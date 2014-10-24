@@ -204,7 +204,7 @@ function Scene:show (event)
 									params.load_image = event.listbox:GetImageLoader(funcs.TryToYield)
 									params.num_colors = colors_stepper:getValue()
 
-									funcs.ShowOverlay("samples.overlay.CC_GenColors", params)
+									funcs.ShowOverlay("colored_corners.GenColors", params)
 								end
 							else
 								retry.isVisible = true

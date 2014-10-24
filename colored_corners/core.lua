@@ -1,4 +1,6 @@
---- Seam-carving demo, following Avidan & Shamir's [paper](http://www.win.tue.nl/~wstahw/edu/2IV05/seamcarving.pdf).
+--- Colored corners demo, following Lagae & Dutr&acute;'s [paper](http://graphics.cs.kuleuven.be/publications/LD06AWTCECC/).
+--
+-- The synthesis algorithm comes from [Kwatra et al.](http://www.cc.gatech.edu/cpl/projects/graphcuttextures/)
 
 --
 -- Permission is hereby granted, free of charge, to any person obtaining
@@ -26,13 +28,10 @@
 -- Modules --
 local long_running = require("utils.LongRunning")
 
--- Corona globals --
-local system = system
-
 -- Corona modules --
 local composer = require("composer")
 
--- Seam-carving demo scene --
+-- Colored corners demo scene --
 local Scene = composer.newScene()
 
 --
@@ -46,22 +45,25 @@ Scene:addEventListener("create")
 local Base = system.ResourceDirectory
 
 -- Image subdirectory --
-local Dir = "UI_Assets"
-			--"Background_Assets"
+local Dir = "test_assets"
 
 -- --
 local Funcs = long_running.GetFuncs(Scene, 20, 130, function(view, params)
+--[[
 	if params.bitmap then
 		params.bitmap:Cancel()
 		view:insert(params.bitmap)
-	end
+	end]]
 end)
+
+-- --
+local Colors = { { 1, 0, 0 }, { 1, 1, 0 }, { 0, 1, 0 }, { 0, 0, 1 } }
 
 --
 function Scene:show (event)
 	if event.phase == "did" then
-		composer.showOverlay("samples.overlay.Seams_ChooseFile", {
-			params = { base = Base, dir = Dir, bitmap_x = 5, bitmap_y = 155, db = "Seams.sqlite3", funcs = Funcs }
+		composer.showOverlay("colored_corners.ChooseFile", {
+			params = { base = Base, dir = Dir, funcs = Funcs, colors = Colors }
 		})
 	end
 end
@@ -77,7 +79,9 @@ end
 
 Scene:addEventListener("hide")
 
---
-Scene.m_description = "This demo / utility implements a seam-carving algorithm, for reducing texture sizes without appreciable quality loss."
+-- Pick energy function? (Add one or both from paper)
+-- Way to tune the randomness? (k = .001 to 1, as in the GC paper, say)
+-- ^^^ Probably irrelevant, actually (though the stuff in the Kwatra paper would make for a nice sample itself...)
+-- Feathering / multiresolution splining options (EXTRA CREDIT)
 
 return Scene

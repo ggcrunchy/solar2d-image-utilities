@@ -25,8 +25,8 @@
 
 -- Modules --
 local bitmap = require("corona_ui.widgets.bitmap")
-local common_ui = require("editor.CommonUI")
 local powers_of_2 = require("bitwise_ops.powers_of_2")
+local tabs_patterns = require("corona_ui.patterns.tabs")
 
 -- Imports --
 local Clear = powers_of_2.Clear
@@ -288,7 +288,7 @@ function Scene:show (event)
 
 		-- ...and tabs used to select it.
 		local active
-		local tabs = common_ui.TabBar(self.view, {
+		local tabs = tabs_patterns.TabBar(self.view, {
 			{
 				label = "(H) Seams", onPress = function()
 					active, method_str.text = UpdateActive(active, hgroup), "Left-to-right seams"

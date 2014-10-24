@@ -30,6 +30,7 @@ local yield = coroutine.yield
 local bitmap = require("corona_ui.widgets.bitmap")
 local button = require("corona_ui.widgets.button")
 local layout = require("corona_ui.utils.layout")
+local tabs_patterns = require("corona_ui.patterns.tabs")
 
 -- Corona globals --
 local display = display
@@ -37,7 +38,6 @@ local easing = easing
 local transition = transition
 
 -- Corona modules --
-local common_ui = require("editor.CommonUI")
 local composer = require("composer")
 
 --
@@ -65,7 +65,7 @@ function Scene:show (event)
 			end
 
 			funcs.Cancel()
-			composer.showOverlay("samples.overlay.CC_ChooseFile", { params = params })
+			composer.showOverlay("colored_corners.ChooseFile", { params = params })
 		end, "Cancel")
 
 		layout.PutBelow(cancel, params.ok_y, 30)
@@ -133,18 +133,18 @@ function Scene:show (event)
 			funcs.SetStatus("Press OK to synthesize")
 
 			--
-			local method = common_ui.TabBar(self.view, {
+			local method = tabs_patterns.TabBar(self.view, {
 				{ label = "Random" }, { label = "Entire Patch" }, { label = "Sub-Patch" }
 			}, { top = display.contentHeight - 50, left = 5, width = 250 })
 
-			local touch_up = common_ui.TabBar(self.view, {
+			local touch_up = tabs_patterns.TabBar(self.view, {
 				{ label = "Multi-Res Spline" }, { label = "Feathering" }, { label = "Nothing" }
 			}, { width = 350 })
 
 			layout.PutAtBottomRight(touch_up, "-.5%", 0)
 
 			-- TODO: Hack!
-			common_ui.TabsHack(self.view, touch_up, 3)
+			tabs_patterns.TabsHack(self.view, touch_up, 3)
 			-- /TODO
 
 			button.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
@@ -152,7 +152,7 @@ function Scene:show (event)
 				-- params.method = from tabs...
 				-- Currently assumed to be Random (other two entail lots of setup)
 
-				funcs.ShowOverlay("samples.overlay.CC_Synthesize", params)
+				funcs.ShowOverlay("colored_corners.Synthesize", params)
 			end, "OK")
 		end)()
 	end

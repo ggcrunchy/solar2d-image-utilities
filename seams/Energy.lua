@@ -32,7 +32,7 @@ local min = math.min
 local bitmap = require("corona_ui.widgets.bitmap")
 local buttons = require("corona_ui.widgets.button")
 local energy = require("image_ops.energy")
-local common_ui = require("editor.CommonUI")
+local tabs_patterns = require("corona_ui.patterns.tabs")
 
 -- Corona globals --
 local display = display
@@ -98,7 +98,7 @@ function Scene:show (event)
 		method_str.anchorY, method_str.y = 1, CH - 20
 
 		-- ...and tabs used to select it.
-		local tabs = common_ui.TabBar(self.view, {
+		local tabs = tabs_patterns.TabBar(self.view, {
 			{
 				label = "Method 1", onPress = function()
 					params.method, params.two_seams = "vertical", true
@@ -145,7 +145,7 @@ function Scene:show (event)
 		local funcs = params.funcs
 		local cancel = buttons.Button(self.view, nil, params.ok_x, params.cancel_y, 100, 40, function()
 			funcs.Cancel()
-			composer.showOverlay("samples.overlay.Seams_ChooseFile", { params = params })
+			composer.showOverlay("seams.ChooseFile", { params = params })
 		end, "Cancel")
 
 		funcs.Action(function()
@@ -160,7 +160,7 @@ function Scene:show (event)
 			buttons.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
 				params.bitmap, params.energy, params.gray = image, values, energy.ToGray
 
-				funcs.ShowOverlay("samples.overlay.Seams_GenSeams", params)
+				funcs.ShowOverlay("seams.GenSeams", params)
 			end, "OK")
 		end)()
 	end
