@@ -23,12 +23,13 @@
 -- [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
 --
 
+-- Apply fixes --
+require("corona_utils.FIXES")
+
 -- Standard library imports --
 local error = error
-local pairs = pairs
 local pcall = pcall
 local print = print
-local setmetatable = setmetatable
 
 -- Modules --
 local debug = require("debug")
