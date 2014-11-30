@@ -25,3 +25,6 @@
 [submodule "iterator_ops"]
 	path = iterator_ops
 	url = https://github.com/ggcrunchy/iterator_ops
+[submodule "corona_boilerplate"]
+	path = corona_boilerplate
+	url = https://github.com/ggcrunchy/corona_boilerplate
