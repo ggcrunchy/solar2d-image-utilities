@@ -59,7 +59,7 @@ function Scene:show (event)
 
 		--
 		local funcs, move_bitmaps = params.funcs
-		local cancel = button.Button(self.view, nil, params.ok_x, 0, 100, 40, function()
+		local cancel = button.Button_XY(self.view, params.ok_x, 0, 100, 40, function()
 			for i = 1, #(move_bitmaps or "") do
 				transition.cancel(move_bitmaps[i])
 			end
@@ -147,7 +147,7 @@ function Scene:show (event)
 			tabs_patterns.TabsHack(self.view, touch_up, 3)
 			-- /TODO
 
-			button.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
+			button.Button_XY(self.view, params.ok_x, params.ok_y, 100, 40, function()
 				params.image = image
 				-- params.method = from tabs...
 				-- Currently assumed to be Random (other two entail lots of setup)

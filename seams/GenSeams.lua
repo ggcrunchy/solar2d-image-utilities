@@ -224,12 +224,12 @@ function Scene:show (event)
 		-- current state; since the latter may itself be time-consuming, it hijacks the busy
 		-- timer (though for cancellation purposes, remains the same) until complete, to avoid
 		-- the awkward scenario that generation finishes, and the view switches, along the way.
-		buttons.Button(self.view, nil, params.ok_x, params.cancel_y, 100, 40, function()
+		buttons.Button_XY(self.view, params.ok_x, params.cancel_y, 100, 40, function()
 			funcs.Cancel()
 			funcs.ShowOverlay("seams.Energy", params)
 		end, "Cancel")
 
-		buttons.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
+		buttons.Button_XY(self.view, params.ok_x, params.ok_y, 100, 40, function()
 			-- filename, directory, base, size
 			-- dimension 1 or 2? row / column
 			-- if 2

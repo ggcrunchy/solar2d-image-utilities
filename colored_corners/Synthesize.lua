@@ -386,7 +386,7 @@ function Scene:show (event)
 
 			funcs.SetStatus("Done")
 
-			local ok = button.Button(self.view, nil, 0, 0, 100, 40, function()
+			local ok = button.Button(self.view, 100, 40, function()
 				display.save(result, { filename = "Out.png", isFullResolution = true })
 				-- TODO: Add some file input stuff...
 				-- What to do on device?

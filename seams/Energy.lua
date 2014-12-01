@@ -143,7 +143,7 @@ function Scene:show (event)
 		-- Find some energy measure of the image and display it as gray levels, allowing the user
 		-- to cancel while either is in progress. If both complete, proceed to the generation step.
 		local funcs = params.funcs
-		local cancel = buttons.Button(self.view, nil, params.ok_x, params.cancel_y, 100, 40, function()
+		local cancel = buttons.Button_XY(self.view, params.ok_x, params.cancel_y, 100, 40, function()
 			funcs.Cancel()
 			composer.showOverlay("seams.ChooseFile", { params = params })
 		end, "Cancel")
@@ -157,7 +157,7 @@ function Scene:show (event)
 			cancel.isVisible = false
 
 			funcs.SetStatus("Press OK to carve seams")
-			buttons.Button(self.view, nil, params.ok_x, params.ok_y, 100, 40, function()
+			buttons.Button_XY(self.view, params.ok_x, params.ok_y, 100, 40, function()
 				params.bitmap, params.energy, params.gray = image, values, energy.ToGray
 
 				funcs.ShowOverlay("seams.GenSeams", params)

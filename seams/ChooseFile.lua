@@ -81,7 +81,7 @@ function Scene:show (event)
 				-- image is read into memory; assuming that went well, the algorithm proceeds on to the
 				-- energy computation step. The option to cancel is available during loading (although
 				-- this is typically a quick process).
-				ok = ok or buttons.Button(self.view, nil, preview.x + 90, preview.y - 20, 100, 40, funcs.Action(function()
+				ok = ok or buttons.Button_XY(self.view, preview.x + 90, preview.y - 20, 100, 40, funcs.Action(function()
 					funcs.SetStatus("Loading image")
 
 					cancel.isVisible = true
@@ -104,7 +104,7 @@ function Scene:show (event)
 					end
 				end), "OK")
 
-				cancel = cancel or buttons.Button(self.view, nil, ok.x, ok.y + 100, 100, 40, Wait, "Cancel")
+				cancel = cancel or buttons.Button_XY(self.view, ok.x, ok.y + 100, 100, 40, Wait, "Cancel")
 
 				Wait()
 			end

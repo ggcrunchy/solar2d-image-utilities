@@ -189,7 +189,7 @@ function Scene:show (event)
 						params.exemplars, params.tile_dim = exemplars, tile_dim
 					end
 
-					ok = button.Button(self.view, nil, preview.x, layout.Below(preview, 30), 100, 40, funcs.Action(function()
+					ok = button.Button_XY(self.view, preview.x, layout.Below(preview, 30), 100, 40, funcs.Action(function()
 						funcs.SetStatus("Will these work?")
 
 						--
@@ -210,7 +210,7 @@ function Scene:show (event)
 								retry.isVisible = true
 							end
 						else
-							retry = button.Button(self.view, nil, ok.x, 0, 100, 40, FindPatches, "Retry")
+							retry = button.Button_XY(self.view, ok.x, 0, 100, 40, FindPatches, "Retry")
 
 							layout.PutBelow(retry, ok, 15)
 						end
