@@ -67,8 +67,8 @@ function Scene:show (event)
 
 		funcs.SetStatus("Choose an image")
 
-		local image_list = image_patterns.ImageList(self.view, 295, 20, {
-			path = params.dir, base = params.base, height = 120, add_preview = true,
+		local image_list = image_patterns.ImageList(self.view, {
+			left = 295, top = 20, path = params.dir, base = params.base, height = 120, add_preview = true,
 
 			filter_info = function(_, w, h) -- Add any images in a certain size range to the list.
 				return w >= 16 and w <= CW - 10 and h >= 16 and h <= CH - 150
