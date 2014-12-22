@@ -91,7 +91,7 @@ function Scene:create ()
 			end
 		end, "Exit"
 	) do
-		button.Button_XY(self.view, display.contentCenterX, display.contentCenterY + (i - 1) * (bh + 25), 400, bh, func, text)
+		button.Button_XY(self.view, "center", "center " .. (i - 1) * (bh + 25), 400, bh, func, text)
 	end
 	-- ^^ TODO: Use layout...
 end
