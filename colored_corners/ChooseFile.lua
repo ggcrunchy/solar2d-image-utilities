@@ -140,7 +140,8 @@ function Scene:show (event)
 
 			press = function(event)
 				-- Respond to any change in the selection.
-				local selection = event.listbox:GetSelection()
+				local listbox = event.listbox
+				local selection = listbox:GetSelection()
 
 				if current ~= selection then
 					Reset()
@@ -155,7 +156,7 @@ function Scene:show (event)
 				if not ok then
 					--
 					local function FindPatches ()
-						local exemplars, w, h = {}, event.listbox:GetDims()
+						local exemplars, w, h = {}, listbox:GetDims()
 						local tile_dim = min(w, h)
 
 						if tile_dim % 2 ~= 0 then
@@ -201,7 +202,7 @@ function Scene:show (event)
 								return function()
 									params.ok_x = ok.x
 									params.ok_y = ok.y
-									params.load_image = event.listbox:GetImageLoader(funcs.TryToYield)
+									params.load_image = listbox:GetImageLoader(funcs.TryToYield)
 									params.num_colors = colors_stepper:getValue()
 
 									funcs.ShowOverlay("colored_corners.GenColors", params)
