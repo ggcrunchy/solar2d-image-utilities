@@ -28,3 +28,6 @@
 [submodule "corona_boilerplate"]
 	path = corona_boilerplate
 	url = https://github.com/ggcrunchy/corona_boilerplate
+[submodule "linear_algebra_ops"]
+	path = linear_algebra_ops
+	url = https://github.com/ggcrunchy/linear_algebra_ops

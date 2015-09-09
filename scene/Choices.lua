@@ -84,14 +84,15 @@ function Scene:create ()
 
 	for i, func, text in args.ArgsByN(2,
 		GoToScene("colored_corners"), "Colored Corners",
-		GoToScene("seams", "Seams"), "Seams",
+		GoToScene("seams"), "Seams",
+		GoToScene("morphing"), "Morphing",
 		function()
 			if not OnSimulator then
 				exit()
 			end
 		end, "Exit"
 	) do
-		button.Button_XY(self.view, "center", "center " .. (i - 1) * (bh + 25), 400, bh, func, text)
+		button.Button_XY(self.view, "center", "center " .. (i - 2) * (bh + 25), 400, bh, func, text)
 	end
 	-- ^^ TODO: Use layout...
 end
