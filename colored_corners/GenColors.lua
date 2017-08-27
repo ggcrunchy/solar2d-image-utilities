@@ -32,6 +32,9 @@ local button = require("corona_ui.widgets.button")
 local layout = require("corona_ui.utils.layout")
 local tabs_patterns = require("corona_ui.patterns.tabs")
 
+-- Plugins --
+local memoryBitmap = require("plugin.memoryBitmap")
+
 -- Corona globals --
 local display = display
 local easing = easing
@@ -73,9 +76,10 @@ function Scene:show (event)
 		funcs.Action(function()
 			funcs.SetStatus("Loading image")
 
-			local image = params.load_image()
-			local pixels, w = image:GetPixels(), image:GetDims()
-
+		--	local image = params.load_image()
+		--	local pixels, w = image:GetPixels(), image:GetDims()
+			local image, w, h = params.load_image()
+print("!!",#image,"DDDD")
 			funcs.SetStatus("Generating exemplars")
 
 			local exemplars, tile_dim, prev = params.exemplars, params.tile_dim
@@ -83,29 +87,31 @@ function Scene:show (event)
 			for i = 1, params.num_colors do
 				--
 				local exemplar, move_bitmaps, index = params.exemplars[i], {}, 1
-				local color_image, ypos = bitmap.Bitmap(self.view), 4 * (exemplar.y * w + exemplar.x)
+				local draw = memoryBitmap.newTexture{ width = tile_dim, height = tile_dim, format = "rgb" }
+				local color_image, ypos = display.newImage(self.view, draw.filename, draw.baseDir)--[[bitmap.Bitmap(self.view)]], 4 * (exemplar.y * w + exemplar.x)
 
-				color_image:Resize(tile_dim, tile_dim) -- Needs some care to not run up against screen?
+			--	color_image:Resize(tile_dim, tile_dim) -- Needs some care to not run up against screen?
 
 				layout.PutAtBottomLeft(color_image, "1%", "-2%")
 
-				for y = 0, tile_dim - 1 do
+				for y = 1, tile_dim do--0, tile_dim - 1 do
 					local xpos = ypos
 
-					for x = 0, tile_dim - 1 do
-						local sum = pixels[xpos + 1] + pixels[xpos + 2] + pixels[xpos + 3]
+					for x = 1, tile_dim do--0, tile_dim - 1 do
+						local b1, b2, b3 = image:byte(xpos + 1, xpos + 3)
+						local sum = b1 + b2 + b3--pixels[xpos + 1] + pixels[xpos + 2] + pixels[xpos + 3]
 
 						exemplar[index], xpos, index = sum, xpos + 4, index + 1
-
-						color_image:SetPixel(x, y, sum / (3 * 255))
-
+local gray = sum / (3 * 255)
+						--[[color_image]]draw:--[[SetPixel]]setPixel(x, y, gray, gray, gray)
+draw:invalidate()
 						funcs.TryToYield()
 					end
 
 					ypos = ypos + 4 * w
 				end
 
-				color_image:WaitForPendingSets()
+			--	color_image:WaitForPendingSets()
 
 				--
 				local cury = color_image.y
@@ -127,7 +133,7 @@ function Scene:show (event)
 
 				frame:setFillColor(0, 0)
 				frame:setStrokeColor(stroke[1], stroke[2], stroke[3])
-				frame:translate(.5 * color_image.width, .5 * color_image.height)
+			--	frame:translate(.5 * color_image.width, .5 * color_image.height)
 			end
 
 			funcs.SetStatus("Press OK to synthesize")
@@ -149,6 +155,7 @@ function Scene:show (event)
 
 			button.Button_XY(self.view, params.ok_x, params.ok_y, 100, 40, function()
 				params.image = image
+				params.w, params.h = w, h
 				-- params.method = from tabs...
 				-- Currently assumed to be Random (other two entail lots of setup)
 

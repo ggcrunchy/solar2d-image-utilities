@@ -36,6 +36,10 @@ local colored_corners = require("image_fx.colored_corners")
 local flow = require("graph_ops.flow")
 local layout = require("corona_ui.utils.layout")
 
+-- Plugins --
+local Bytemap = require("plugin.Bytemap")
+--local memoryBitmap = require("plugin.memoryBitmap")
+
 -- Corona globals --
 local display = display
 
@@ -52,7 +56,7 @@ end
 
 --
 local function FindPatch (patch, image, tdim, method, funcs)
-	local w, h = image:GetDims()
+	local w, h = image.w, image.h--:GetDims()
 
 	if method ~= "SUBPATCH" then
 		patch.x, patch.y = random(0, w - tdim), random(0, h - tdim)
@@ -63,13 +67,14 @@ local function FindPatch (patch, image, tdim, method, funcs)
 
 	funcs.SetStatus("Building patch")
 
-	local ypos, pixels, index = QuadPos(patch.x, patch.y, w), image:GetPixels(), 1
+	local ypos, pixels, index = QuadPos(patch.x, patch.y, w), image.image--[[:GetPixels()]], 1
 
-	for _ = 0, tdim - 1 do
+	for _ = 1, tdim do--0, tdim - 1 do
 		local xpos = ypos
 
-		for _ = 0, tdim - 1 do
-			local sum = pixels[xpos + 1] + pixels[xpos + 2] + pixels[xpos + 3]
+		for _ = 1, tdim do--0, tdim - 1 do
+			local a, b, c = pixels:byte(xpos + 1, xpos + 3)--pixels[xpos + 1] + pixels[xpos + 2] + pixels[xpos + 3]
+			local sum = a + b + c
 
 			patch[index], xpos, index = sum, xpos + 4, index + 1
 
@@ -125,12 +130,15 @@ local function FindWeights (edges_cap, indices, background, patch, nverts, funcs
 	end
 end
 
+-- --
+local Opts = {}
+
 --
 local function Resolve (composite, x, y, image, tdim, cut, patch, indices, nverts, funcs)
-	local w, pixels, px, py = image:GetDims(), image:GetPixels(), patch.x, patch.y
+	local w, pixels, px, py = image.w--[[:GetDims()]], image.image--[[:GetPixels()]], patch.x, patch.y
 
 	funcs.SetStatus("Integrating new samples")
-
+Opts.format = nil
 	for _, index in ipairs(cut.s) do
 		if index < nverts then
 			local im1 = indices[index] - 1
@@ -138,41 +146,74 @@ local function Resolve (composite, x, y, image, tdim, cut, patch, indices, nvert
 			local row = (im1 - col) / tdim
 			local pos = QuadPos(px + col, py + row, w)
 
-			composite:SetPixel(x + col, y + row, pixels[pos + 1] / 255, pixels[pos + 2] / 255, pixels[pos + 3] / 255)
+		--	local r, g, b = pixels:byte(pos + 1, pos + 3)
+Opts.x1, Opts.y1 = x + col + 1, y + row + 1
+		--	composite:--[[SetPixel]]setPixel(x + col + 1, y + row + 1, r / 255, g / 255, b / 255)--pixels[pos + 1] / 255, pixels[pos + 2] / 255, pixels[pos + 3] / 255)
+			composite:SetBytes(pixels:sub(pos + 1, pos + 3), Opts)
 		end
 	end
 
 	-- TODO: Feathering or multi-resolution spline
-
-	composite:WaitForPendingSets()
+composite:invalidate()
+--	composite:WaitForPendingSets()
 end
 
 --
 local function RestoreRow (composite, pixels, x, y, half_tdim, lpos, rpos)
+--[=[
 	for _ = 1, half_tdim do
-		composite:SetPixel(x, y, pixels[lpos + 1] / 255, pixels[lpos + 2] / 255, pixels[lpos + 3] / 255)
+		local r, g, b = pixels:byte(lpos + 1, lpos + 3)
+
+		composite:--[[SetPixel]]setPixel(x + 1, y + 1, r / 255, g / 255, b / 255)--x, y, pixels[lpos + 1] / 255, pixels[lpos + 2] / 255, pixels[lpos + 3] / 255)
 
 		x, lpos = x + 1, lpos + 4
 	end
 
 	for _ = 1, half_tdim do
-		composite:SetPixel(x, y, pixels[rpos + 1] / 255, pixels[rpos + 2] / 255, pixels[rpos + 3] / 255)
+		local r, g, b = pixels:byte(rpos + 1, rpos + 3)
+
+		composite:--[[SetPixel]]setPixel(x + 1, y + 1, r / 255, g / 255, b / 255)--pixels[rpos + 1] / 255, pixels[rpos + 2] / 255, pixels[rpos + 3] / 255)
 
 		x, rpos = x + 1, rpos + 4
-	end
+	end]=]
+Opts.x1, Opts.y1 = x + 1,y + 1
+if not JJ then
+Opts.format=nil
+print("CB1", composite:GetBytes(Opts))
+print("")
+Opts.format="rgba"
+end
+composite:SetBytes(pixels:sub(lpos + 1, lpos + half_tdim * 4), Opts)
+
+Opts.x1 = Opts.x1 + half_tdim
+
+composite:SetBytes(pixels:sub(rpos + 1, rpos + half_tdim * 4), Opts)
+if not JJ then
+print("L", pixels:sub(lpos + 1, lpos + half_tdim * 4))
+print("")
+print("R", pixels:sub(rpos + 1, rpos + half_tdim * 4))
+print("")
+Opts.x1,Opts.format=x+1,nil
+print("CB1", composite:GetBytes(Opts))
+print("")
+Opts.format="rgba"
+JJ=true
+end
+composite:invalidate()
 end
 
 --
 local function RestoreColor (composite, x, y, half_tdim, image, ul, ur, ll, lr, funcs)
 	funcs.SetStatus("Restoring background color")
 
-	local w, pixels = image:GetDims(), image:GetPixels()
+	local w, pixels = image.w, image.image--image:GetDims(), image:GetPixels()
 	local ul_pos = QuadPos(ul.x + half_tdim, ul.y + half_tdim, w)
 	local ur_pos = QuadPos(ur.x, ur.y + half_tdim, w)
 	local ll_pos = QuadPos(ll.x + half_tdim, ll.y, w)
 	local lr_pos = QuadPos(lr.x, lr.y, w)
 	local stride = 4 * w
 
+Opts.format = "rgba"
 	for _ = 1, half_tdim do
 		RestoreRow(composite, pixels, x, y, half_tdim, ul_pos, ur_pos)
 
@@ -189,7 +230,7 @@ local function RestoreColor (composite, x, y, half_tdim, image, ul, ur, ll, lr, 
 		funcs.TryToYield()
 	end
 
-	composite:WaitForPendingSets()
+--	composite:WaitForPendingSets()
 end
 
 --
@@ -307,29 +348,54 @@ local FlowOpts = { compute_mincut = true, into = {} }
 --
 local function Synthesize (view, params)
 	--
-	local composite, tdim, dim = bitmap.Bitmap(view), params.tile_dim, colored_corners.GetDim(params.num_colors)
+	local composite, tdim, dim = nil--[[bitmap.Bitmap(view)]], params.tile_dim, colored_corners.GetDim(params.num_colors)
+	local w, h = dim * tdim, dim * tdim
 
-	composite:Resize(dim * tdim, dim * tdim) -- Needs some care to not run up against screen?
+	composite = --[[memoryBitmap]]Bytemap.newTexture{ width = w, height = h, format = "rgb" }
 
-	layout.PutAtBottomLeft(composite, "35%", "-2%")
+	local simage = display.newImage(view, composite.filename, composite.baseDir)
+	
+--	composite:Resize(dim * tdim, dim * tdim) -- Needs some care to not run up against screen?
+
+	layout.PutAtBottomLeft(simage--[[composite]], "35%", "-2%")
+
+	local sbounds, fixed = simage.contentBounds, false
+	local extrax, ymin = sbounds.xMax - display.contentWidth, sbounds.yMin
+
+	if extrax > -10 then
+		fixed, simage.width = true, display.contentWidth - 10 - sbounds.xMin
+	end
+
+	if ymin < 10 then
+		fixed, simage.height = true, sbounds.yMax - 10
+	end
+
+	if fixed then
+		layout.PutAtBottomLeft(simage, "35%", "-2%")
+	end
 
 	--
 	local funcs, half_tdim = params.funcs, .5 * tdim
-
+print("HTDIM",half_tdim,half_tdim*4)
 	funcs.SetStatus("Preprocessing patch")
 
 	local nverts = 2 * (half_tdim + 1) * half_tdim
 	local edges_cap, indices = PreparePatchRegion(half_tdim, tdim, nverts, funcs.TryToYield)
-	local background, patch, image = {}, {}, params.image
+	local background, patch, image = {}, {}, { image = params.image, w = params.w, h = params.h } -- params.image
 
 	-- TODO: If patch-based method, build summed area tables...
 
 	-- For a given corner, choose the "opposite" quadrant: for the upper-right tile, draw from
-	-- the lower-right; for the upper-right, from the lower-left, etc.
+	-- the lower-left; for the upper-right, from the lower-left, etc.
 	local exemplars, method, mid = params.exemplars, params.method, .5 * tdim^2
 	local ul_pos, ur_pos, ll_pos, lr_pos = mid + half_tdim, mid, half_tdim, 0
-
+local jj
 	colored_corners.TraverseGrid(function(x, y, ul, ur, ll, lr)
+	if jj then
+--	return
+	else
+	jj=true
+	end
 		--
 		funcs.SetStatus("Compositing colors")
 
@@ -337,24 +403,30 @@ local function Synthesize (view, params)
 		ll, lr = exemplars[ll + 1], exemplars[lr + 1]
 
 		LoadHalf(exemplars, background, ul, ur, ul_pos, ur_pos, half_tdim, tdim, 1)
-		LoadHalf(exemplars, background, ul, ur, ll_pos, lr_pos, half_tdim, tdim, mid + 1)
+		LoadHalf(exemplars, background, ll, lr, ll_pos, lr_pos, half_tdim, tdim, mid + 1)
 
 		funcs.TryToYield()
-
+Opts.format = "grayscale"
 		--
 		local index = 1
-
-		for iy = 0, tdim - 1 do
-			for ix = 0, tdim - 1 do
-				composite:SetPixel(x + ix, y + iy, background[index] / (3 * 255))
+print("1", tdim)
+		for iy = 1, tdim do--0, tdim - 1 do
+			for ix = 1, tdim do--0, tdim - 1 do
+				local gray = math.floor(background[index] / 3 + .5)--background[index] / (3 * 255)
+Opts.x1, Opts.y1 = x + ix, y + iy
+--print("XY",x+ix,y+iy,ix,iy)
+			--	composite:setPixel--[[SetPixel]](x + ix, y + iy, gray, gray, gray)--background[index] / (3 * 255))
+				composite:SetBytes(string.char(gray), Opts)
 
 				index = index + 1
 			end
 
+			composite:invalidate()
+
 			funcs.TryToYield()
 		end
-
-		composite:WaitForPendingSets()
+print("2")
+	--	composite:WaitForPendingSets()
 
 		--
 		FindPatch(patch, image, tdim, method, funcs)
@@ -363,7 +435,7 @@ local function Synthesize (view, params)
 		funcs.SetStatus("Computing mincut")
 
 		local _, extra = flow.MaxFlow(edges_cap, nverts + 1, nverts + 2, FlowOpts)
-
+print("3")
 		RestoreColor(composite, x, y, half_tdim, image, ul, ur, ll, lr, funcs)
 		Resolve(composite, x, y, image, tdim, extra.mincut, patch, indices, nverts, funcs)
 	end, params.num_colors, tdim)

@@ -34,6 +34,9 @@ local button = require("corona_ui.widgets.button")
 local image_patterns = require("corona_ui.patterns.image")
 local layout = require("corona_ui.utils.layout")
 
+-- Plugins --
+local impack = require("plugin.impack")
+
 -- Corona globals --
 local display = display
 local native = native
@@ -124,7 +127,7 @@ function Scene:show (event)
 		local preview, ok, colors_stepper, size_stepper, current
 
 		funcs.SetStatus("Choose an image")
-
+local dir = params.dir
 		local image_list = image_patterns.ImageList(self.view, {
 			left = 295, top = 20, path = params.dir, base = params.base, height = 120, preview_width = 96, preview_height = 96,
 
@@ -202,7 +205,15 @@ function Scene:show (event)
 								return function()
 									params.ok_x = ok.x
 									params.ok_y = ok.y
-									params.load_image = listbox:GetImageLoader(funcs.TryToYield)
+								--	params.load_image = listbox:GetImageLoader(funcs.TryToYield)
+									local name = dir .. "/" .. listbox:GetSelection()
+									params.load_image = function()
+									print("NN",name)
+									local IO=impack.image.load_image_object(name)
+									--	return impack.image.load(name, { req_comp = 4 })
+									return IO:rgba(), IO.width, IO.height
+									end
+								
 									params.num_colors = colors_stepper:getValue()
 
 									funcs.ShowOverlay("colored_corners.GenColors", params)

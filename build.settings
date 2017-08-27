@@ -5,11 +5,6 @@ settings =
 	-- versionCode = "3"
 	},
 
-	androidPermissions =
-	{
-		"android.permission.INTERNET"
-	},
-
 	orientation =
 	{
 		default = "landscape"
@@ -17,6 +12,10 @@ settings =
 
     plugins =
     {
-	--	["plugin.bit"] = { publisherId = "com.coronalabs" },
+		["plugin.bit"] = { publisherId = "com.coronalabs" },
+		["plugin.Bytemap"] = { publisherId = "com.xibalbastudios" },
+		["plugin.impack"] = { publisherId = "com.xibalbastudios" },
+		["plugin.luaproc"] = { publishderId = "com.xibalbastudios" },
+		["plugin.memoryBitmap"] = { publisherId = "com.coronalabs" }
 	}
 }
