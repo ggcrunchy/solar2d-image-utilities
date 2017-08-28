@@ -15,7 +15,8 @@ settings =
 		["plugin.bit"] = { publisherId = "com.coronalabs" },
 		["plugin.Bytemap"] = { publisherId = "com.xibalbastudios" },
 		["plugin.impack"] = { publisherId = "com.xibalbastudios" },
-		["plugin.luaproc"] = { publishderId = "com.xibalbastudios" },
-		["plugin.memoryBitmap"] = { publisherId = "com.coronalabs" }
+		["plugin.luaproc"] = { publisherId = "com.xibalbastudios" },
+		["plugin.memoryBitmap"] = { publisherId = "com.coronalabs" },
+		["plugin.tinyfiledialogs"] = { publisherId = "com.xibalbastudios" }
 	}
 }

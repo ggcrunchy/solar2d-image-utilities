@@ -298,6 +298,10 @@ function Scene:show (event)
 			if two_seams then
 				offset = 1
 
+				if fn ~= pn then
+					assignment.into, costs = {}, {}
+				end
+
 				for coord = 2, pn do
 					funcs.SetStatus(pstr, coord, pn)
 
