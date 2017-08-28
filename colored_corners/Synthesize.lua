@@ -177,28 +177,13 @@ local function RestoreRow (composite, pixels, x, y, half_tdim, lpos, rpos)
 		x, rpos = x + 1, rpos + 4
 	end]=]
 Opts.x1, Opts.y1 = x + 1,y + 1
-if not JJ then
-Opts.format=nil
-print("CB1", composite:GetBytes(Opts))
-print("")
-Opts.format="rgba"
-end
+
 composite:SetBytes(pixels:sub(lpos + 1, lpos + half_tdim * 4), Opts)
 
 Opts.x1 = Opts.x1 + half_tdim
 
 composite:SetBytes(pixels:sub(rpos + 1, rpos + half_tdim * 4), Opts)
-if not JJ then
-print("L", pixels:sub(lpos + 1, lpos + half_tdim * 4))
-print("")
-print("R", pixels:sub(rpos + 1, rpos + half_tdim * 4))
-print("")
-Opts.x1,Opts.format=x+1,nil
-print("CB1", composite:GetBytes(Opts))
-print("")
-Opts.format="rgba"
-JJ=true
-end
+
 composite:invalidate()
 end
 
@@ -376,7 +361,7 @@ local function Synthesize (view, params)
 
 	--
 	local funcs, half_tdim = params.funcs, .5 * tdim
-print("HTDIM",half_tdim,half_tdim*4)
+
 	funcs.SetStatus("Preprocessing patch")
 
 	local nverts = 2 * (half_tdim + 1) * half_tdim
@@ -389,13 +374,8 @@ print("HTDIM",half_tdim,half_tdim*4)
 	-- the lower-left; for the upper-right, from the lower-left, etc.
 	local exemplars, method, mid = params.exemplars, params.method, .5 * tdim^2
 	local ul_pos, ur_pos, ll_pos, lr_pos = mid + half_tdim, mid, half_tdim, 0
-local jj
+
 	colored_corners.TraverseGrid(function(x, y, ul, ur, ll, lr)
-	if jj then
---	return
-	else
-	jj=true
-	end
 		--
 		funcs.SetStatus("Compositing colors")
 
@@ -409,12 +389,11 @@ local jj
 Opts.format = "grayscale"
 		--
 		local index = 1
-print("1", tdim)
+
 		for iy = 1, tdim do--0, tdim - 1 do
 			for ix = 1, tdim do--0, tdim - 1 do
 				local gray = math.floor(background[index] / 3 + .5)--background[index] / (3 * 255)
 Opts.x1, Opts.y1 = x + ix, y + iy
---print("XY",x+ix,y+iy,ix,iy)
 			--	composite:setPixel--[[SetPixel]](x + ix, y + iy, gray, gray, gray)--background[index] / (3 * 255))
 				composite:SetBytes(string.char(gray), Opts)
 
@@ -425,7 +404,7 @@ Opts.x1, Opts.y1 = x + ix, y + iy
 
 			funcs.TryToYield()
 		end
-print("2")
+
 	--	composite:WaitForPendingSets()
 
 		--
@@ -435,7 +414,7 @@ print("2")
 		funcs.SetStatus("Computing mincut")
 
 		local _, extra = flow.MaxFlow(edges_cap, nverts + 1, nverts + 2, FlowOpts)
-print("3")
+
 		RestoreColor(composite, x, y, half_tdim, image, ul, ur, ll, lr, funcs)
 		Resolve(composite, x, y, image, tdim, extra.mincut, patch, indices, nverts, funcs)
 	end, params.num_colors, tdim)

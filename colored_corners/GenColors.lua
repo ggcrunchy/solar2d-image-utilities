@@ -79,7 +79,7 @@ function Scene:show (event)
 		--	local image = params.load_image()
 		--	local pixels, w = image:GetPixels(), image:GetDims()
 			local image, w, h = params.load_image()
-print("!!",#image,"DDDD")
+--print("!!",#image,"DDDD")
 			funcs.SetStatus("Generating exemplars")
 
 			local exemplars, tile_dim, prev = params.exemplars, params.tile_dim
