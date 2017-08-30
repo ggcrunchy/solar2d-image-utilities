@@ -123,12 +123,22 @@ local function FindWeights (edges_cap, indices, background, patch, nverts, funcs
 	until s > nverts
 
 	--
+	-- notes: this basically assigns saturated cost for s and t edges... is there a better way?
 	for _ = 1, 2 do
 		for i = 1, nverts do
 			edges_cap[index + 2], index = Sum[i], index + 3
 		end
 	end
 end
+
+-- idea: basically clone the diamond over and over for additional patches,
+-- only preserving source and sink (even then, maybe only the latter), then use
+-- additional seam nodes per Kwatra et al. to glue layers together... then we must
+-- keep a running tally in the diamond to make sure all the indices are right...
+-- actually, source and sink should be first (so should indeed dignify single source)
+-- to make these calculations easiest... so keep list of patches too; the cut table
+-- gives us all the edges we need, but includes the source and sink ones... so we
+-- just need to do some updates, I think? (and interpret the seams appropriately)
 
 -- --
 local Opts = {}
@@ -307,7 +317,7 @@ local function PreparePatchRegion (half_tdim, tdim, nverts, yfunc)
 		yfunc()
 	end
 
-	AddTriple(edges_cap, nverts + 3, nverts + 2, huge)
+--	AddTriple(edges_cap, nverts + 3, nverts + 2, huge)
 
 	return edges_cap, indices
 end
