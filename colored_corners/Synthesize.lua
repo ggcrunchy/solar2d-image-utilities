@@ -255,20 +255,20 @@ local function HorzEdge (ec, cur, w)
 	cur = cur - w
 
 	for i = 1, 2 * w - 1 do
-		AddTriples_BothWays(ec, cur + i, cur + i + 1)
+		AddTriples_BothWays(ec, cur + i, cur + i + 1) -- todo: first and last should link to sink?
 	end
 end
 
 --
 local function VertEdge (ec, prev, cur, w)
 	for i = 1, w do
-		AddTriples_BothWays(ec, prev + i, cur + i)
+		AddTriples_BothWays(ec, prev + i, cur + i) -- todo: last...
 	end
 
 	prev, cur = prev + 1, cur + 1
 
 	for i = 1, w do
-		AddTriples_BothWays(ec, prev - i, cur - i)
+		AddTriples_BothWays(ec, prev - i, cur - i) -- ...and first should link to sink?
 	end
 end
 
@@ -284,7 +284,7 @@ local function PreparePatchRegion (half_tdim, tdim, nverts, yfunc)
 		HorzEdge(edges_cap, cur, w)
 
 		if prev > 0 then
-			VertEdge(edges_cap, prev, cur, w - 1)
+			VertEdge(edges_cap, prev, cur, w - 1) -- todo: prev == 0 should link upward to sink?
 		end
 
 		yfunc()
@@ -302,7 +302,7 @@ local function PreparePatchRegion (half_tdim, tdim, nverts, yfunc)
 
 		AddIndices(indices, cur, ypos + half_tdim, w)
 		HorzEdge(edges_cap, cur, w)
-		VertEdge(edges_cap, prev, cur, w)
+		VertEdge(edges_cap, prev, cur, w) -- todo: at w == 1 should link downward to sink?
 
 		yfunc()
 
